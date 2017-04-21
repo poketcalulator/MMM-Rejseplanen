@@ -19,7 +19,7 @@ Module.register("MMM-Rejseplanen",{
 		fade: true,
 		fadePoint: 0.25, // Start on 1/4th of the list.
                 initialLoadDelay: 0, // start delay seconds.
-								apiBase: 'http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard',
+								apiBase: "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard",
                 stationID: "008503203",
 
 		titleReplace: {
@@ -137,9 +137,9 @@ Module.register("MMM-Rejseplanen",{
 		console.log("***** updateTimetable: function *****");
 		var self = this;
 		var retry = true;
-		var currentDate = moment().format('DD.MM.YYYY'); // Can probably be removed
-		var currentTime = moment().format('HH:mm');  // Can probably be removed
-		var url = this.config.apiBase + '?id=' + this.config.stationID + '&date=' + currentDate + '&time=' + currentTime + '&format=json';
+		var currentDate = moment().format("DD.MM.YYYY"); // Can probably be removed
+		var currentTime = moment().format("HH:mm");  // Can probably be removed
+		var url = this.config.apiBase + "?id=" + this.config.stationID + "&date=" + currentDate + "&time=" + currentTime + "&format=json";
 
 		// var url = "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?id=8600551&date=20.04.2017&time=23:00&format=json";
 
@@ -184,10 +184,10 @@ Module.register("MMM-Rejseplanen",{
 
 				// departureTimestamp: moment(trains.stop.departureTimestamp * 1000).format("HH:mm"),
 
-				departureTimestamp: trains.DepartureBoard.Departure[i].time,
-				delay: trains.DepartureBoard.Departure[i].time,
-				name: trains.DepartureBoard.Departure[i].name,
-				to: trains.DepartureBoard.Departure[i].direction
+				departureTimestamp: trains.time,
+				delay: trains.time,
+				name: trains.name,
+				to: trains.direction
 
 			});
 		}
