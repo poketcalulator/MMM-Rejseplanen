@@ -1,9 +1,11 @@
-/* Timetable for Trains Module */
+/* A DepartureBoard for Danish bus, train, ferry and more */
 
 /* Magic Mirror
- * Module: Rejseplanen
+ * Module: MMM-Rejseplanen
+ * By John Kristensen
  *
- * By Benjamin Angst http://www.beny.ch
+ * The following is based on
+ * MMM-swisstransport, By Benjamin Angst
  * based on a Script from Michael Teeuw http://michaelteeuw.nl
  * MIT Licensed.
  */
@@ -17,8 +19,6 @@ Module.register("MMM-Rejseplanen",{
 		fade: true,
 		fadePoint: 0.25, // Start on 1/4th of the list.
                 initialLoadDelay: 0, // start delay seconds.
-
-                // apiBase: 'http://transport.opendata.ch/v1/stationboard',
 								apiBase: 'http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard',
                 stationID: "008503203",
 
@@ -27,7 +27,7 @@ Module.register("MMM-Rejseplanen",{
 		},
 	},
 
-	// Define required scripts.
+	// Define required Styles.
 	getStyles: function() {
 		console.log("***** getStyles: function *****");
 		return ["Rejseplanen.css", "font-awesome.css"];
@@ -128,18 +128,17 @@ Module.register("MMM-Rejseplanen",{
 		return table;
 	},
 
-	/* updateTimetable(compliments)
-	 * Requests new data from openweather.org.
+	/* UpdateTimetable(DepartureBoard)
+	 * Requests new data from rejseplanen.dk.
+	 * API documentation / https://p3.zdassets.com/hc/theme_assets/497496/200019391/ReST_documentation_Rejseplanen_Latest.pdf
 	 * Calls processTrains on succesfull response.
 	 */
 	updateTimetable: function() {
 		console.log("***** updateTimetable: function *****");
-		// var url = this.config.apiBase + this.getParams();
 		var self = this;
 		var retry = true;
-
-		var currentDate = moment().format('DD.MM.YYYY');
-		var currentTime = moment().format('HH:mm');
+		var currentDate = moment().format('DD.MM.YYYY'); // Can probably be removed
+		var currentTime = moment().format('HH:mm');  // Can probably be removed
 		var url = this.config.apiBase + '?id=' + this.config.stationID + '&date=' + currentDate + '&time=' + currentTime + '&format=json';
 
 		// var url = "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?id=8600551&date=20.04.2017&time=23:00&format=json";
@@ -168,23 +167,10 @@ Module.register("MMM-Rejseplanen",{
 		trainRequest.send();
 	},
 
-	/* getParams(compliments)
-	 * Generates an url with api parameters based on the config.
-	 *
-	 * return String - URL params.
-
-	getParams: function() {
-		var params = "?";
-                params += "id=" + this.config.id;
-		params += "&limit=" + this.config.maximumEntries;
-
-		return params;
-	},
-
 	/* processTrains(data)
 	 * Uses the received data to set the various values.
 	 *
-	 * argument data object - Weather information received form openweather.org.
+	 * argument data object - DepartureBoard information received form rejseplanen.dk.
 	 */
 	processTrains: function(data) {
 		console.log("***** processTrains: function *****");
