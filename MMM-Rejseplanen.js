@@ -13,7 +13,7 @@ Module.register("MMM-Rejseplanen",{
 
 	// Define module defaults
 	defaults: {
-		// maximumEntries: 10, // Total Maximum Entries
+		maximumEntries: 10, // Total Maximum Entries
 		updateInterval: 5 * 60 * 1000, // Update every 5 minutes.
 		animationSpeed: 2000,
 		fade: true,
@@ -140,8 +140,8 @@ Module.register("MMM-Rejseplanen",{
 		var currentDate = moment().format("DD.MM.YYYY"); // Can probably be removed
 		var currentTime = moment().format("HH.mm");  // Can probably be removed
 		// var url = this.config.apiBase + "?id=" + this.config.stationID + "&date=" + currentDate + "&time=" + currentTime + "&format=json";
-		var url = this.config.apiBase + "?id=" + this.config.stationID + "&format=json";
-
+		var url = this.config.apiBase + "?id=" + this.config.stationID + "&useBus=0&useTog=1&format=json";
+		console.log(url);
 		var trainRequest = new XMLHttpRequest();
 		trainRequest.open("GET", url, true);
 		trainRequest.onreadystatechange = function() {
@@ -179,14 +179,24 @@ Module.register("MMM-Rejseplanen",{
 		for (var i = 0, count = data.DepartureBoard.Departure.length; i < count; i++) {
 
 			var trains = data.DepartureBoard.Departure[i];
+if (trains.direction.includes("Oden")) {
+
+
+
 			this.trains.push({
 
 				departureTimestamp: trains.time,
-				delay: trains.time,
 				name: trains.name,
-				to: trains.direction
+				to: trains.direction,
+				delay: trains.rtTime
+				// delay: moment(trains.rtTime).diff(trains.time, "minutes"),
+				// departureTimestamp: moment(trains.stop.departureTimestamp * 1000).format("HH:mm"),
+
+
 
 			});
+
+			};
 		}
 
 		this.loaded = true;
