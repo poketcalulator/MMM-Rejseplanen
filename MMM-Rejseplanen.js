@@ -20,7 +20,7 @@ Module.register("MMM-Rejseplanen",{
 		fadePoint: 0.25, // Start on 1/4th of the list.
                 initialLoadDelay: 0, // start delay seconds.
 								apiBase: "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard",
-                stationID: "008503203",
+                stationID: "8600551",
 
 		titleReplace: {
 			"Rejseplanen ": ""
@@ -138,10 +138,9 @@ Module.register("MMM-Rejseplanen",{
 		var self = this;
 		var retry = true;
 		var currentDate = moment().format("DD.MM.YYYY"); // Can probably be removed
-		var currentTime = moment().format("HH:mm");  // Can probably be removed
-		var url = this.config.apiBase + "?id=" + this.config.stationID + "&date=" + currentDate + "&time=" + currentTime + "&format=json";
-
-		// var url = "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?id=8600551&date=20.04.2017&time=23:00&format=json";
+		var currentTime = moment().format("HH.mm");  // Can probably be removed
+		// var url = this.config.apiBase + "?id=" + this.config.stationID + "&date=" + currentDate + "&time=" + currentTime + "&format=json";
+		var url = this.config.apiBase + "?id=" + this.config.stationID + "&format=json";
 
 		var trainRequest = new XMLHttpRequest();
 		trainRequest.open("GET", url, true);
@@ -173,16 +172,14 @@ Module.register("MMM-Rejseplanen",{
 	 * argument data object - DepartureBoard information received form rejseplanen.dk.
 	 */
 	processTrains: function(data) {
-		console.log("***** processTrains: function *****");
-
+		// console.log("***** processTrains: function *****");
+		// console.log(data.DepartureBoard.Departure.length);
 
 		this.trains = [];
 		for (var i = 0, count = data.DepartureBoard.Departure.length; i < count; i++) {
 
 			var trains = data.DepartureBoard.Departure[i];
 			this.trains.push({
-
-				// departureTimestamp: moment(trains.stop.departureTimestamp * 1000).format("HH:mm"),
 
 				departureTimestamp: trains.time,
 				delay: trains.time,
