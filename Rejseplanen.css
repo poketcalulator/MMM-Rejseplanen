@@ -1,16 +1,22 @@
-.Rejseplanen {
-  font-size: 75%;
-  line-height: 65px;
-  display: inline-block;
-  -ms-transform: translate(0, -3px); /* IE 9 */
-  -webkit-transform: translate(0, -3px); /* Safari */
-  transform: translate(0, -3px);
+.delay {
+	color: #FF0000;
 }
 
-.Rejseplanen table {
-    width: 400px;
+.rnvheader {
+	text-align: left;
 }
 
-.Rejseplanen .red {
-    color: #FF0000
+.lineinfo {
+	text-align: right;
+	padding: 0px 5px 0px 5px;
+}
+
+.timeinfo {
+	padding: 0px 5px 0px 5px;	
+	text-align: left;
+}
+
+.destinationinfo {
+	padding: 0px 5px 0px 5px;	
+	text-align: left;
 }

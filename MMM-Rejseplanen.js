@@ -4,222 +4,211 @@
  * Module: MMM-Rejseplanen
  * By John Kristensen
  *
- * The following is based on
- * MMM-swisstransport, By Benjamin Angst
+ * based on MMM-RNV By Stefan Krause
  * based on a Script from Michael Teeuw http://michaelteeuw.nl
  * MIT Licensed.
  */
 Module.register("MMM-Rejseplanen",{
 
-	// Define module defaults
-	defaults: {
-		maximumEntries: 10, // Total Maximum Entries
-		updateInterval: 5 * 60 * 1000, // Update every 5 minutes.
-		animationSpeed: 2000,
-		fade: true,
-		fadePoint: 0.25, // Start on 1/4th of the list.
-                initialLoadDelay: 0, // start delay seconds.
-								apiBase: "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard",
-                stationID: "8600551",
+  defaults: {
+    apiKey: "",
+    units: config.units,
+    animationSpeed: 1000,
+    refreshInterval: 1000 * 15, //refresh every minute
+    updateInterval: 1000 * 3600, //update every hour
+    timeFormat: config.timeFormat,
+    lang: config.language,
 
-		titleReplace: {
-			"Rejseplanen ": ""
+
+    initialLoadDelay: 0, // 0 seconds delay
+    retryDelay: 2500,
+    // apiBase: 'http://rnv.the-agent-factory.de:8080/easygo2/api', (orginal)
+    apiBase: "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard",
+    // requestURL: '/regions/rnv/modules/stationmonitor/element',
+    stationID: "8600551",
+
+    iconTable: {
+			"IC": "fa fa-train",
+			"LYN": "fa fa-train",
+			"REG": "fa fa-train",
+			"S": "fa fa-subway",
+			"TOG": "fa fa-train",
+			"BUS": "fa fa-bus",
+			"EXB": "fa fa-bus",
+			"NB": "fa fa-bus",
+			"TB": "fa fa-bus",
+			"F": "fa fa-ship",
+			"M": "fa fa-subway"
 		},
-	},
+  },
 
-	// Define required Styles.
-	getStyles: function() {
-		console.log("***** getStyles: function *****");
-		return ["Rejseplanen.css", "font-awesome.css"];
-	},
+  // Define required scripts.
+  getScripts: function() {
+    return ["moment.js", "font-awesome.css"];
+  },
 
-	// Define required scripts.
-	getScripts: function() {
-		console.log("***** getScripts: function *****");
-		return ["moment.js"];
-	},
+  getStyles: function() {
+    return ['Rejseplanen.css'];
+  },
 
-	// Define start sequence.
-	start: function() {
-		console.log("***** start: function *****");
+  start: function() {
+    Log.info('Starting module: ' + this.name);
+    this.loaded = false;
+    this.sendSocketNotification('CONFIG', this.config);
+  },
 
+  getDom: function() {
+    var wrapper = document.createElement("div");
 
-		Log.info("Starting module: " + this.name);
+    /* orginal
+    if (this.config.apiKey === "") {
+      wrapper.innerHTML = "No RNV <i>apiKey</i> set in config file.";
+      wrapper.className = "dimmed light small";
+      return wrapper;
+    }
+    */
 
-		// Set locale.
-		moment.locale(config.language);
+    if (this.config.stationID === "") {
+      wrapper.innerHTML = "No Rejseplanen.dk <i>stationID</i> set in config file.";
+      wrapper.className = "dimmed light small";
+      return wrapper;
+    }
 
-                this.trains = [];
-		this.loaded = false;
-		this.scheduleUpdate(this.config.initialLoadDelay);
+    if (!this.loaded) {
+      wrapper.innerHTML = this.translate('LOADING');
+      wrapper.className = "dimmed light small";
+      return wrapper;
+    }
 
-		this.updateTimer = null;
+    if (!this.departures.length) {
+      wrapper.innerHTML = "No data";
+      wrapper.className = "dimmed light small";
+      return wrapper;
+    }
 
-	},
+    var table = document.createElement("table");
+    table.id = "rnvtable";
+    table.className = "small thin light";
 
-	// Override dom generator.
-	getDom: function() {
-		console.log("***** getDom: function *****");
-		var wrapper = document.createElement("div");
+    var row = document.createElement("tr");
 
-		if (this.config.id === "") {
-			wrapper.innerHTML = "Please set the correct Station ID: " + this.name + ".";
-			wrapper.className = "dimmed light small";
-			return wrapper;
-		}
+    var timeHeader = document.createElement("th");
+    timeHeader.innerHTML = "Afgang";
+    timeHeader.className = "rnvheader";
+    row.appendChild(timeHeader);
+    var lineHeader = document.createElement("th");
+    lineHeader.innerHTML = "Spor";
+    lineHeader.className = "rnvheader";
+    lineHeader.colSpan = 2;
+    row.appendChild(lineHeader);
+    var destinationHeader = document.createElement("th");
+    destinationHeader.innerHTML = "Til";
+    destinationHeader.className = "rnvheader";
+    row.appendChild(destinationHeader);
+    table.appendChild(row);
 
-		if (!this.loaded) {
+    for (var i in this.departures) {
+      var currentDeparture = this.departures[i];
+      var row = document.createElement("tr");
+      table.appendChild(row);
 
-			wrapper.innerHTML = "Loading trains ...";
-			wrapper.className = "dimmed light small";
-			return wrapper;
-		}
+      var cellDeparture = document.createElement("td");
+      cellDeparture.innerHTML = currentDeparture.time;
+      cellDeparture.className = "timeinfo";
+      if (currentDeparture.delay) {
+        var start = moment.duration(currentDeparture.time, "HH:mm");
+        var end = moment.duration(currentDeparture.delay, "HH:mm");
+        var diff = end.subtract(start);
+        var spanDelay = document.createElement("span");
+        spanDelay.innerHTML = " +" + diff.minutes();
+        spanDelay.className = "smll delay";
+        cellDeparture.appendChild(spanDelay);
+      }
+      row.appendChild(cellDeparture);
 
-		var table = document.createElement("table");
-		table.className = "small";
+      var cellTransport = document.createElement("td");
+      cellTransport.className = "timeinfo";
+      var symbolTransportation = document.createElement("span");
+      symbolTransportation.className = this.config.iconTable[currentDeparture.transportation];
+      cellTransport.appendChild(symbolTransportation);
+      row.appendChild(cellTransport);
 
-		for (var t in this.trains) {
-			var trains = this.trains[t];
+      var cellLine = document.createElement("td");
+      if(currentDeparture.lineLabel){
+        cellLine.innerHTML = currentDeparture.lineLabel;
+      } else {
+        cellLine.innerHTML = "";
+      }
+      cellLine.className = "lineinfo";
+      row.appendChild(cellLine);
 
-			var row = document.createElement("tr");
-			table.appendChild(row);
+      var cellDirection = document.createElement("td");
+      cellDirection.innerHTML = currentDeparture.direction;
+      cellDirection.className = "destinationinfo";
+      row.appendChild(cellDirection);
+    }
+    wrapper.appendChild(table);
 
-			var depCell = document.createElement("td");
-			depCell.className = "departuretime";
-			depCell.innerHTML = trains.departureTimestamp;
-			row.appendChild(depCell);
+    /* orginal
+    if (this.ticker) {
+      var marqueeTicker = document.createElement("marquee");
+      marqueeTicker.innerHTML = this.ticker;
+      marqueeTicker.className = "small thin light";
+      marqueeTicker.width = document.getElementsByClassName("module MMM-RNV MMM-RNV")[0].offsetWidth;
+      wrapper.appendChild(marqueeTicker);
+    }
+    */
 
-                        if(trains.delay) {
-                            var delayCell = document.createElement("td");
-                            delayCell.className = "delay red";
-                            delayCell.innerHTML = "+" + trains.delay + " min";
-                            row.appendChild(delayCell);
-                        } else {
-                            var delayCell = document.createElement("td");
-                            delayCell.className = "delay red";
-                            delayCell.innerHTML = trains.delay;
-                            row.appendChild(delayCell);
-                        }
+    return wrapper;
+  },
 
-			var trainNameCell = document.createElement("td");
-			trainNameCell.innerHTML = trains.name;
-			trainNameCell.className = "align-right bright";
-			row.appendChild(trainNameCell);
+  processDepartures: function(data) {
+    /* orginal
+    if (!data.DepartureBoard) {
+      console.log(data.DepartureBoard.Departure);
+      return;
+    }
+    */
 
-			var trainToCell = document.createElement("td");
-			trainToCell.innerHTML = trains.to;
-			trainToCell.className = "align-right trainto";
-			row.appendChild(trainToCell);
+    this.departures = [];
+    // this.ticker = data.ticker;
 
-			if (this.config.fade && this.config.fadePoint < 1) {
-				if (this.config.fadePoint < 0) {
-					this.config.fadePoint = 0;
-				}
-				var startingPoint = this.trains.length * this.config.fadePoint;
-				var steps = this.trains.length - startingPoint;
-				if (t >= startingPoint) {
-					var currentStep = t - startingPoint;
-					row.style.opacity = 1 - (1 / steps * currentStep);
-				}
-			}
+    for (var i in data.DepartureBoard.Departure) {
+      var t = data.DepartureBoard.Departure[i];
 
-		}
+      this.departures.push({
+        /* orginal
+        * time: (t.time).substring(0,5),
+        * delay: (((t.time).indexOf('+') > 0) ? (t.time).substring(6,(t.time).length) : 0),
+        * lineLabel: t.lineLabel,
+        * direction: t.direction,
+        status: t.status,
+        statusNote: t.statusNote,
+        * transportation: t.transportation,
+        */
+        time: t.time,
+        delay: t.rtTime,
+        lineLabel: t.rtTrack,
+        direction: t.finalStop,
+        transportation: t.type,
+        name: t.name
 
-		return table;
-	},
+      });
 
-	/* UpdateTimetable(DepartureBoard)
-	 * Requests new data from rejseplanen.dk.
-	 * API documentation / https://p3.zdassets.com/hc/theme_assets/497496/200019391/ReST_documentation_Rejseplanen_Latest.pdf
-	 * Calls processTrains on succesfull response.
-	 */
-	updateTimetable: function() {
-		console.log("***** updateTimetable: function *****");
-		var self = this;
-		var retry = true;
-		var currentDate = moment().format("DD.MM.YYYY"); // Can probably be removed
-		var currentTime = moment().format("HH.mm");  // Can probably be removed
-		// var url = this.config.apiBase + "?id=" + this.config.stationID + "&date=" + currentDate + "&time=" + currentTime + "&format=json";
-		var url = this.config.apiBase + "?id=" + this.config.stationID + "&useBus=0&useTog=1&format=json";
-		console.log(url);
-		var trainRequest = new XMLHttpRequest();
-		trainRequest.open("GET", url, true);
-		trainRequest.onreadystatechange = function() {
-			if (this.readyState === 4) {
-				if (this.status === 200) {
-					self.processTrains(JSON.parse(this.response));
-				} else if (this.status === 401) {
-					self.config.id = "";
-					self.updateDom(self.config.animationSpeed);
+    }
 
-					Log.error(self.name + ": Incorrect waht so ever...");
-					retry = false;
-				} else {
-					Log.error(self.name + ": Could not load trains.");
-				}
+    return;
+  },
 
-				if (retry) {
-					self.scheduleUpdate((self.loaded) ? -1 : self.config.retryDelay);
-				}
-			}
-		};
-		trainRequest.send();
-	},
-
-	/* processTrains(data)
-	 * Uses the received data to set the various values.
-	 *
-	 * argument data object - DepartureBoard information received form rejseplanen.dk.
-	 */
-	processTrains: function(data) {
-		// console.log("***** processTrains: function *****");
-		// console.log(data.DepartureBoard.Departure.length);
-
-		this.trains = [];
-		for (var i = 0, count = data.DepartureBoard.Departure.length; i < count; i++) {
-
-			var trains = data.DepartureBoard.Departure[i];
-if (trains.direction.includes("Oden")) {
-
-
-
-			this.trains.push({
-
-				departureTimestamp: trains.time,
-				name: trains.name,
-				to: trains.direction,
-				delay: trains.rtTime
-				// delay: moment(trains.rtTime).diff(trains.time, "minutes"),
-				// departureTimestamp: moment(trains.stop.departureTimestamp * 1000).format("HH:mm"),
-
-
-
-			});
-
-			};
-		}
-
-		this.loaded = true;
-		this.updateDom(this.config.animationSpeed);
-	},
-
-	/* scheduleUpdate()
-	 * Schedule next update.
-	 *
-	 * argument delay number - Milliseconds before next update. If empty, this.config.updateInterval is used.
-	 */
-	scheduleUpdate: function(delay) {
-		console.log("***** scheduleUpdate: function *****");
-		var nextLoad = this.config.updateInterval;
-		if (typeof delay !== "undefined" && delay >= 0) {
-			nextLoad = delay;
-		}
-
-		var self = this;
-		clearTimeout(this.updateTimer);
-		this.updateTimer = setTimeout(function() {
-			self.updateTimetable();
-		}, nextLoad);
-	},
+  socketNotificationReceived: function(notification, payload) {
+        if (notification === "STARTED") {
+        this.updateDom();
+      }
+      else if (notification === "DATA") {
+        this.loaded = true;
+        this.processDepartures(JSON.parse(payload));
+        this.updateDom();
+        }
+  }
 
 });
