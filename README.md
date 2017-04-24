@@ -382,3 +382,11 @@ modules: [
 |Älmhult|7400045|
 |Ängelholm|7400064|
 |Ödåkra|7401543|
+
+
+## Credits
+To Michael Teeuw (https://magicmirror.builders)
+To Stefan Krause (http://yawns.de) (MMM-RNV) which this module is basically based on.
+
+## Base API
+This Modul is using the Rejseplanen API (https://help.rejseplanen.dk/hc/en-us/categories/201728005-Labs)
