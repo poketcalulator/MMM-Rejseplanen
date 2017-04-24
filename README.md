@@ -2,7 +2,7 @@
 
 This an module for the [MagicMirror](https://github.com/MichMich/MagicMirror).
 
-IDeparture board Danish stations for IC (InterCity), LYN (Lyntog), REG (Regionaltog), S (S-Tog), TOG (other train), BUS (Bus), EXB (Express Buss), NB (Nattbus), TB (Telebus, other form of transport), F (Ferry) and M (Metro).
+Departure board Danish stations for IC (InterCity), LYN (Lyntog), REG (Regionaltog), S (S-Tog), TOG (other train), BUS (Bus), EXB (Express Buss), NB (Nattbus), TB (Telebus, other form of transport), F (Ferry) and M (Metro).
 
 Monitoring your favorite local departure station, with up to 20 departure for the destination.
 There are data from the Danish, Findrejsen.dk API.
@@ -24,7 +24,7 @@ modules: [
 			header: 'Findrejsen.dk',
 			position:	'top_left',
 			config: {
-				stationID: 'ENTER YOUR STATION ID HERE',
+				stationID: 'ENTER YOUR STATION ID HERE'
 			}
 		},
 ````
