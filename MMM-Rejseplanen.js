@@ -18,6 +18,7 @@ Module.register("MMM-Rejseplanen",{
     updateInterval: 1000 * 3600, //update every hour
     timeFormat: config.timeFormat,
     lang: config.language,
+    destfilter: "",
 
 
     initialLoadDelay: 0, // 0 seconds delay
@@ -58,14 +59,6 @@ Module.register("MMM-Rejseplanen",{
   getDom: function() {
     var wrapper = document.createElement("div");
 
-    /* orginal
-    if (this.config.apiKey === "") {
-      wrapper.innerHTML = "No RNV <i>apiKey</i> set in config file.";
-      wrapper.className = "dimmed light small";
-      return wrapper;
-    }
-    */
-
     if (this.config.stationID === "") {
       wrapper.innerHTML = "No Rejseplanen.dk <i>stationID</i> set in config file.";
       wrapper.className = "dimmed light small";
@@ -85,23 +78,23 @@ Module.register("MMM-Rejseplanen",{
     }
 
     var table = document.createElement("table");
-    table.id = "rnvtable";
+    table.id = "rptable";
     table.className = "small thin light";
 
     var row = document.createElement("tr");
 
     var timeHeader = document.createElement("th");
     timeHeader.innerHTML = "Afgang";
-    timeHeader.className = "rnvheader";
+    timeHeader.className = "rpheader";
     row.appendChild(timeHeader);
     var lineHeader = document.createElement("th");
     lineHeader.innerHTML = "Spor";
-    lineHeader.className = "rnvheader";
+    lineHeader.className = "rpheader";
     lineHeader.colSpan = 2;
     row.appendChild(lineHeader);
     var destinationHeader = document.createElement("th");
     destinationHeader.innerHTML = "Til";
-    destinationHeader.className = "rnvheader";
+    destinationHeader.className = "rpheader";
     row.appendChild(destinationHeader);
     table.appendChild(row);
 
@@ -156,17 +149,18 @@ Module.register("MMM-Rejseplanen",{
 
     for (var i in data.DepartureBoard.Departure) {
       var t = data.DepartureBoard.Departure[i];
+      if (t.finalStop.includes(this.config.destfilter)) {
 
-      this.departures.push({
-        time: t.time,
-        delay: t.rtTime,
-        lineLabel: t.rtTrack,
-        direction: t.finalStop,
-        transportation: t.type,
-        name: t.name
+        this.departures.push({
+          time: t.time,
+          delay: t.rtTime,
+          lineLabel: t.rtTrack,
+          direction: t.finalStop,
+          transportation: t.type,
+          name: t.name
 
-      });
-
+        });
+      }
     }
 
     return;

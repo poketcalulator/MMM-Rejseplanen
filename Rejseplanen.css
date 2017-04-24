@@ -2,7 +2,7 @@
 	color: #FF0000;
 }
 
-.rnvheader {
+.rpheader {
 	text-align: left;
 }
 
@@ -12,11 +12,11 @@
 }
 
 .timeinfo {
-	padding: 0px 5px 0px 5px;	
+	padding: 0px 5px 0px 5px;
 	text-align: left;
 }
 
 .destinationinfo {
-	padding: 0px 5px 0px 5px;	
+	padding: 0px 5px 0px 5px;
 	text-align: left;
 }

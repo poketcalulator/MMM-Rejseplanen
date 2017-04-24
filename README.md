@@ -14,8 +14,6 @@ Open a terminal session, navigate to your MagicMirror's `modules` folder and exe
 
 Complete the installation by adding the following to config.js as shown below.
 
-(Find your stationID in the list below)
-
 ## Using the module
 ````javascript
 modules: [
@@ -24,7 +22,8 @@ modules: [
 			header: 'Findrejsen.dk',
 			position:	'top_left',
 			config: {
-				stationID: 'ENTER YOUR STATION ID HERE'
+				stationID: 'ENTER YOUR STATION ID HERE', // (Find your stationID in the list below)
+        destfilter: "" // Free text search filter (destination name)
 			}
 		},
 ````
