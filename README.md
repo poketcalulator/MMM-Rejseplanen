@@ -14,6 +14,8 @@ Open a terminal session, navigate to your MagicMirror's `modules` folder and exe
 
 Complete the installation by adding the following to config.js as shown below.
 
+(Find your stationID in the list below)
+
 ## Using the module
 ````javascript
 modules: [
@@ -26,6 +28,7 @@ modules: [
 			}
 		},
 ````
+
 ## Station vs stationID
 
 |Station|stationID|
