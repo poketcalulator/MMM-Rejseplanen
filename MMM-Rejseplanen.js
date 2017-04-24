@@ -22,9 +22,7 @@ Module.register("MMM-Rejseplanen",{
 
     initialLoadDelay: 0, // 0 seconds delay
     retryDelay: 2500,
-    // apiBase: 'http://rnv.the-agent-factory.de:8080/easygo2/api', (orginal)
     apiBase: "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard",
-    // requestURL: '/regions/rnv/modules/stationmonitor/element',
     stationID: "8600551",
 
     iconTable: {
@@ -149,43 +147,17 @@ Module.register("MMM-Rejseplanen",{
     }
     wrapper.appendChild(table);
 
-    /* orginal
-    if (this.ticker) {
-      var marqueeTicker = document.createElement("marquee");
-      marqueeTicker.innerHTML = this.ticker;
-      marqueeTicker.className = "small thin light";
-      marqueeTicker.width = document.getElementsByClassName("module MMM-RNV MMM-RNV")[0].offsetWidth;
-      wrapper.appendChild(marqueeTicker);
-    }
-    */
-
     return wrapper;
   },
 
   processDepartures: function(data) {
-    /* orginal
-    if (!data.DepartureBoard) {
-      console.log(data.DepartureBoard.Departure);
-      return;
-    }
-    */
 
     this.departures = [];
-    // this.ticker = data.ticker;
 
     for (var i in data.DepartureBoard.Departure) {
       var t = data.DepartureBoard.Departure[i];
 
       this.departures.push({
-        /* orginal
-        * time: (t.time).substring(0,5),
-        * delay: (((t.time).indexOf('+') > 0) ? (t.time).substring(6,(t.time).length) : 0),
-        * lineLabel: t.lineLabel,
-        * direction: t.direction,
-        status: t.status,
-        statusNote: t.statusNote,
-        * transportation: t.transportation,
-        */
         time: t.time,
         delay: t.rtTime,
         lineLabel: t.rtTrack,
