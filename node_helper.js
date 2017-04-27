@@ -19,14 +19,13 @@ module.exports = NodeHelper.create({
 
 	getData: function() {
 		var self = this;
-
 /*
 useTog=0
 useBus=0
 useMetro=0
 */
-		var myUrl = this.config.apiBase + "?id=" + this.config.stationID + "&format=json";
-
+		var myUrl = this.config.apiBase + "?id=" + this.config.stationID + "&useBus=0&format=json";
+		// console.log(myUrl);
 		request({
 			url: myUrl,
 			method: 'GET'

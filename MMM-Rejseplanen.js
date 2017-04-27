@@ -11,20 +11,19 @@
 Module.register("MMM-Rejseplanen",{
 
   defaults: {
-    apiKey: "",
     units: config.units,
     animationSpeed: 1000,
-    refreshInterval: 1000 * 15, //refresh every minute
+    refreshInterval: 1000 * 60, //refresh every minute
     updateInterval: 1000 * 3600, //update every hour
     timeFormat: config.timeFormat,
     lang: config.language,
     destfilter: "",
-
-
+    appendLocationNameToHeader: true,
     initialLoadDelay: 0, // 0 seconds delay
     retryDelay: 2500,
     apiBase: "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard",
     stationID: "8600551",
+    stationName: "",
 
     iconTable: {
 			"IC": "fa fa-train",
@@ -142,6 +141,15 @@ Module.register("MMM-Rejseplanen",{
 
     return wrapper;
   },
+
+  // Override getHeader method.
+getHeader: function() {
+  if (this.config.appendLocationNameToHeader) {
+    return "Rejseplanen.dk - " + this.config.stationName;
+  }
+
+  return this.data.header;
+},
 
   processDepartures: function(data) {
 
