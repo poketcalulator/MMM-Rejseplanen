@@ -13,7 +13,7 @@ Module.register("MMM-Rejseplanen",{
   defaults: {
     units: config.units,
     animationSpeed: 1000,
-    refreshInterval: 1000 * 60, //refresh every minute
+    refreshInterval: 1000 * 15, //refresh every minute
     updateInterval: 1000 * 3600, //update every hour
     timeFormat: config.timeFormat,
     lang: config.language,
@@ -53,7 +53,16 @@ Module.register("MMM-Rejseplanen",{
     Log.info('Starting module: ' + this.name);
     this.loaded = false;
     this.sendSocketNotification('CONFIG', this.config);
+
+    if (this.config.vehicle.toUpperCase() === "T") {
+      this.config.vehicletype = "&useBus=0";
+    } else if (this.config.vehicle.toUpperCase() === "B") {
+      this.config.vehicletype = "&useTog=0";
+    } else {
+      this.config.vehicletype = ""
+    }
   },
+
 
   getDom: function() {
     var wrapper = document.createElement("div");
@@ -82,15 +91,22 @@ Module.register("MMM-Rejseplanen",{
 
     var row = document.createElement("tr");
 
+    // Departure time header
     var timeHeader = document.createElement("th");
-    timeHeader.innerHTML = "Afgang";
+    // timeHeader.innerHTML = "Afgang";
+    timeHeader.innerHTML = "<i class='fa fa-clock-o' aria-hidden='true'></i>";
     timeHeader.className = "rpheader";
     row.appendChild(timeHeader);
+
+    // Line header
     var lineHeader = document.createElement("th");
-    lineHeader.innerHTML = "Spor";
-    lineHeader.className = "rpheader";
+    // lineHeader.innerHTML = "Spor";
+    lineHeader.innerHTML = "<i class='fa fa-exchange' aria-hidden='true'></i>"
+    lineHeader.className = "lineheader";
     lineHeader.colSpan = 2;
     row.appendChild(lineHeader);
+
+    // Destination header
     var destinationHeader = document.createElement("th");
     destinationHeader.innerHTML = "Til";
     destinationHeader.className = "rpheader";
@@ -102,9 +118,12 @@ Module.register("MMM-Rejseplanen",{
       var row = document.createElement("tr");
       table.appendChild(row);
 
+      // Departure time
       var cellDeparture = document.createElement("td");
       cellDeparture.innerHTML = currentDeparture.time;
       cellDeparture.className = "timeinfo";
+
+      // Calculate the delay, if any
       if (currentDeparture.delay) {
         var start = moment.duration(currentDeparture.time, "HH:mm");
         var end = moment.duration(currentDeparture.delay, "HH:mm");
@@ -116,13 +135,22 @@ Module.register("MMM-Rejseplanen",{
       }
       row.appendChild(cellDeparture);
 
+      // Transportation icon
       var cellTransport = document.createElement("td");
       cellTransport.className = "timeinfo";
       var symbolTransportation = document.createElement("span");
       symbolTransportation.className = this.config.iconTable[currentDeparture.transportation];
       cellTransport.appendChild(symbolTransportation);
+
+      // HER HER !!
+      var spanName = document.createElement("span");
+      spanName.innerHTML = " " + currentDeparture.name;
+      spanName.className = "lineinfo";
+      cellTransport.appendChild(spanName);
+
       row.appendChild(cellTransport);
 
+      // Line
       var cellLine = document.createElement("td");
       if(currentDeparture.lineLabel){
         cellLine.innerHTML = currentDeparture.lineLabel;
@@ -132,6 +160,7 @@ Module.register("MMM-Rejseplanen",{
       cellLine.className = "lineinfo";
       row.appendChild(cellLine);
 
+      // Departure direction
       var cellDirection = document.createElement("td");
       cellDirection.innerHTML = currentDeparture.direction;
       cellDirection.className = "destinationinfo";
@@ -143,6 +172,7 @@ Module.register("MMM-Rejseplanen",{
   },
 
   // Override getHeader method.
+
 getHeader: function() {
   if (this.config.appendLocationNameToHeader) {
     return "Rejseplanen.dk - " + this.config.stationName;

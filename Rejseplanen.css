@@ -3,7 +3,11 @@
 }
 
 .rpheader {
-	text-align: left;
+	text-align: Center;
+}
+
+.lineheader {
+	text-align: right;
 }
 
 .lineinfo {
