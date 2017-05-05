@@ -22,7 +22,7 @@ Module.register("MMM-Rejseplanen",{
     initialLoadDelay: 0, // 0 seconds delay
     retryDelay: 2500,
     apiBase: "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard",
-    stationID: "8600551",
+    stationID: "",
     stationName: "",
 
     iconTable: {
@@ -40,14 +40,17 @@ Module.register("MMM-Rejseplanen",{
 		},
   },
 
+
   // Define required scripts.
   getScripts: function() {
     return ["moment.js", "font-awesome.css"];
   },
 
+
   getStyles: function() {
     return ['Rejseplanen.css'];
   },
+
 
   start: function() {
     Log.info('Starting module: ' + this.name);
@@ -91,28 +94,6 @@ Module.register("MMM-Rejseplanen",{
 
     var row = document.createElement("tr");
 
-    // Departure time header
-    var timeHeader = document.createElement("th");
-    // timeHeader.innerHTML = "Afgang";
-    timeHeader.innerHTML = "<i class='fa fa-clock-o' aria-hidden='true'></i>";
-    timeHeader.className = "rpheader";
-    row.appendChild(timeHeader);
-
-    // Line header
-    var lineHeader = document.createElement("th");
-    // lineHeader.innerHTML = "Spor";
-    lineHeader.innerHTML = "<i class='fa fa-exchange' aria-hidden='true'></i>"
-    lineHeader.className = "lineheader";
-    lineHeader.colSpan = 2;
-    row.appendChild(lineHeader);
-
-    // Destination header
-    var destinationHeader = document.createElement("th");
-    destinationHeader.innerHTML = "Til";
-    destinationHeader.className = "rpheader";
-    row.appendChild(destinationHeader);
-    table.appendChild(row);
-
     for (var i in this.departures) {
       var currentDeparture = this.departures[i];
       var row = document.createElement("tr");
@@ -142,7 +123,6 @@ Module.register("MMM-Rejseplanen",{
       symbolTransportation.className = this.config.iconTable[currentDeparture.transportation];
       cellTransport.appendChild(symbolTransportation);
 
-      // HER HER !!
       var spanName = document.createElement("span");
       spanName.innerHTML = " " + currentDeparture.name;
       spanName.className = "lineinfo";
@@ -171,24 +151,21 @@ Module.register("MMM-Rejseplanen",{
     return wrapper;
   },
 
+
   // Override getHeader method.
+  getHeader: function() {
+    if (this.config.appendLocationNameToHeader) {
+      return "Rejseplanen.dk - " + this.config.stationName;
+    }
+    return this.data.header;
+  },
 
-getHeader: function() {
-  if (this.config.appendLocationNameToHeader) {
-    return "Rejseplanen.dk - " + this.config.stationName;
-  }
-
-  return this.data.header;
-},
 
   processDepartures: function(data) {
-
     this.departures = [];
-
     for (var i in data.DepartureBoard.Departure) {
       var t = data.DepartureBoard.Departure[i];
       if (t.finalStop.includes(this.config.destfilter)) {
-
         this.departures.push({
           time: t.time,
           delay: t.rtTime,
@@ -196,13 +173,12 @@ getHeader: function() {
           direction: t.finalStop,
           transportation: t.type,
           name: t.name
-
         });
       }
     }
-
     return;
   },
+
 
   socketNotificationReceived: function(notification, payload) {
         if (notification === "STARTED") {
