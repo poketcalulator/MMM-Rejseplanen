@@ -6,7 +6,7 @@ Train and bus departure board for Danish stations
 (InterCity, LYN, REG, S (S-Tog), BUS (Bus), EXB (Express Buss), NB (Night bus), Telebus, Ferry and Metro)
 
 Monitoring your favorite local departure station, with the next 20 departure for the destination.
-The are data from the Danish Findrejsen.dk API.
+The data are from the Danish [Findrejsen.dk API][Findrejsen.dk API](https://help.rejseplanen.dk/hc/en-us/categories/201728005-Labs)
 
 Furthermore, support for some Swedish stations Which is connected to Danish stations (has not been tested)
 
@@ -42,7 +42,6 @@ modules: [
 |`stationName`|REQUIRED|Select the station name from the list below|
 |`vehicle`|REQUIRED| **T** for trains, **B** for bus|
 |`destfilter`|EMPTY|Filter on destination name (case-sensitive)|
-
 
 
 ## Station vs stationID
@@ -405,4 +404,4 @@ modules: [
 - To Stefan Krause (http://yawns.de) (MMM-RNV) which this module is basically based on.
 
 ## Base API
-This Modul is using the Rejseplanen API (https://help.rejseplanen.dk/hc/en-us/categories/201728005-Labs)
+This Modul is using the [Findrejsen.dk API](https://help.rejseplanen.dk/hc/en-us/categories/201728005-Labs)
