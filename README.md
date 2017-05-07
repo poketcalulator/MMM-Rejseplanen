@@ -26,8 +26,8 @@ modules: [
 		position: 'top_left',
 		header: 'Rejseplanen.dk',
 			config: {
-				stationID: "ENTER YOUR STATION ID HERE",
-				stationName: "ENTER YOUR STATION NAME HERE",
+				stationID:, "ENTER YOUR STATION ID HERE",
+				stationName:, "ENTER YOUR STATION NAME HERE",
 				vehicle: "T",
 				destfilter: ""
 			}
