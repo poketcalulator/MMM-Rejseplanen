@@ -3,12 +3,12 @@
 This an module for the [MagicMirror](https://github.com/MichMich/MagicMirror).
 
 Train and bus departure board for Danish stations
-(InterCity, LYN, REG, S (S-Tog), BUS (Bus), EXB (Express Buss), NB (Night bus), Telebus, Ferry and Metro)
+InterCity, LYN, REG, S (S-Tog), Metro, BUS, EXB (Express Buss), NB (Night bus), Telebus and Ferry
 
 Monitoring your favorite local departure station, with the next 20 departure for the destination.
 The data are from the Danish [Findrejsen.dk API](https://help.rejseplanen.dk/hc/en-us/categories/201728005-Labs)
 
-Furthermore, support for some Swedish stations Which is connected to Danish stations (has not been tested)
+Furthermore, support for some Swedish stations which is connected to Danish stations (has not been tested)
 
 ## Example
 ![Example](https://github.com/poketcalulator/MMM-Rejseplanen/blob/master/Example/Example01.png)
