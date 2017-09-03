@@ -142,8 +142,14 @@ Module.register("MMM-Rejseplanen",{
 
       // Departure direction
       var cellDirection = document.createElement("td");
-      cellDirection.innerHTML = currentDeparture.direction;
-      cellDirection.className = "destinationinfo";
+      if(currentDeparture.transportation == "M"){
+        cellDirection.innerHTML = "<i class='fa fa-arrow-right' aria-hidden='true'></i> " + currentDeparture.direction;
+        cellDirection.className = "destinationinfo";
+      }
+      else {
+        cellDirection.innerHTML = currentDeparture.finalStop;
+        cellDirection.className = "destinationinfo";
+      }
       row.appendChild(cellDirection);
     }
     wrapper.appendChild(table);
@@ -170,7 +176,8 @@ Module.register("MMM-Rejseplanen",{
           time: t.time,
           delay: t.rtTime,
           lineLabel: t.rtTrack,
-          direction: t.finalStop,
+          finalStop: t.finalStop,
+          direction: t.direction,
           transportation: t.type,
           name: t.name
         });

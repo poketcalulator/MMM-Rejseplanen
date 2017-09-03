@@ -13,14 +13,17 @@
 .lineinfo {
 	text-align: right;
 	padding: 0px 5px 0px 5px;
+	vertical-align:top;
 }
 
 .timeinfo {
 	padding: 0px 5px 0px 5px;
 	text-align: left;
+	vertical-align:top;
 }
 
 .destinationinfo {
 	padding: 0px 5px 0px 5px;
 	text-align: left;
+	vertical-align:top;
 }
