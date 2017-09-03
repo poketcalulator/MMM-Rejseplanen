@@ -171,7 +171,7 @@ Module.register("MMM-Rejseplanen",{
     this.departures = [];
     for (var i in data.DepartureBoard.Departure) {
       var t = data.DepartureBoard.Departure[i];
-      if (t.finalStop.includes(this.config.destfilter)) {
+      if (t.finalStop.includes(this.config.destfilter) || t.direction.includes(this.config.destfilter)) {
         this.departures.push({
           time: t.time,
           delay: t.rtTime,
