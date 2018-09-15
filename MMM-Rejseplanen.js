@@ -24,6 +24,7 @@ Module.register("MMM-Rejseplanen",{
     apiBase: "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard",
     stationID: "",
     stationName: "",
+    departuresMax: 20, // OBS NY ÆNDRING !!!!!! 15.09.2018
 
     iconTable: {
 			"IC": "fa fa-train",
@@ -94,6 +95,12 @@ Module.register("MMM-Rejseplanen",{
 
     var row = document.createElement("tr");
 
+    // OBS NY ÆNDRING !!!!!! 15.09.2018
+    if(this.departures.length > this.config.departuresMax){
+      this.departures.length -= (this.departures.length - this.config.departuresMax);
+    }
+    console.log(this.departures.length - this.config.departuresMax);
+// console.log(this.config.departuresMax);
     for (var i in this.departures) {
       var currentDeparture = this.departures[i];
       var row = document.createElement("tr");

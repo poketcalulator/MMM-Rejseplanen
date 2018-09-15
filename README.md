@@ -29,7 +29,8 @@ modules: [
 				stationID: "ENTER YOUR STATION ID HERE",
 				stationName: "ENTER YOUR STATION NAME HERE",
 				vehicle: "T",
-				destfilter: ""
+				destfilter: "",
+				departuresMax: 1..20
 			}
 		},
 ````
@@ -42,6 +43,7 @@ modules: [
 |`stationName`|REQUIRED|Select the station name from the list below|
 |`vehicle`|REQUIRED| **T** for trains, **B** for bus|
 |`destfilter`|EMPTY|Filter on destination name (case-sensitive)|
+|`departuresMax`|EMPTY|Number of departures returned. 20 is max and default if not configured|
 
 
 ## Station vs stationID
